@@ -4,26 +4,18 @@ from google.auth.transport.requests import Request
 import os
 import pickle
 
-# ماژول‌های مورد نیاز برای تولید توکن و احراز هویت با Gmail API
 SCOPES = ['https://www.googleapis.com/auth/gmail.modify']
 
 def get_gmail_token():
-    """
-    این تابع فرآیند احراز هویت با Gmail API را انجام می‌دهد
-    و یک فایل token.json تولید می‌کند.
-    """
     creds = None
     
-    # بررسی وجود فایل token.json
     if os.path.exists('token.json'):
         creds = Credentials.from_authorized_user_file('token.json', SCOPES)
     
-    # اگر اعتبارنامه‌ها موجود نیستند یا معتبر نیستند
     if not creds or not creds.valid:
         if creds and creds.expired and creds.refresh_token:
             creds.refresh(Request())
         else:
-            # بررسی وجود فایل credentials.json
             if not os.path.exists('credentials.json'):
                 print("Error: 'credentials.json' file not found!")
                 print("Please download credentials.json from Google Cloud Console and place it in this directory.")
@@ -33,7 +25,6 @@ def get_gmail_token():
             flow = InstalledAppFlow.from_client_secrets_file('credentials.json', SCOPES)
             creds = flow.run_local_server(port=0)
             
-        # ذخیره اعتبارنامه‌ها برای اجرای بعدی
         with open('token.json', 'w') as token:
             token.write(creds.to_json())
             
